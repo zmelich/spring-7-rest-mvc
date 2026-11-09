@@ -21,11 +21,14 @@ import static org.springframework.security.config.annotation.web.configuration.O
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${spring.security.user.name}") String username;
-    @Value("${spring.security.user.password}") String password;
+    //Used only for Basic Authentication. Not used for OAuth2 JWT authentication
+    //@Value("${spring.security.user.name}") String username;
+    //@Value("${spring.security.user.password}") String password;
 
+    //
+    /* Used only for Basic Authentication. Not used for OAuth2 JWT authentication
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    /public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
@@ -36,7 +39,7 @@ public class SecurityConfig {
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(user);
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
