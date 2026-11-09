@@ -38,10 +38,12 @@ import static org.mockito.BDDMockito.given;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -124,7 +126,15 @@ class BeerControllerTest {
 
 
         MvcResult mvcResult = mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwt().jwt( jwt -> {
+                            jwt.claims(claims -> {
+                                        claims.put("scope", "message-read");
+                                        claims.put("scope", "message-write");
+                                    })
+                                    .subject("messaging-client")
+                                    .notBefore(Instant.now().minusSeconds(5L));
+                        }))
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeerNullName)))
