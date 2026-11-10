@@ -20,9 +20,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityTestConfig {
 
-    @Value("${spring.security.user.name}") String username;
-    @Value("${spring.security.user.password}") String password;
+    //Used only for Basic Authentication. Not used for OAuth2 JWT authentication
+    //@Value("${spring.security.user.name}") String username;
+    //@Value("${spring.security.user.password}") String password;
 
+    /* Used only for Basic Authentication. Not used for OAuth2 JWT authentication
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -37,13 +39,19 @@ public class SecurityTestConfig {
         return new InMemoryUserDetailsManager(user);
     }
 
+     */
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                //.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults());
+                        .anyRequest().authenticated()
+                )
+                //.httpBasic(Customizer.withDefaults())
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(Customizer.withDefaults())
+                );
 
         return http.build();
     }

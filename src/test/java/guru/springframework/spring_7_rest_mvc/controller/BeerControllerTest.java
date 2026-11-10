@@ -6,6 +6,7 @@ import guru.springframework.spring_7_rest_mvc.model.BeerStyle;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
@@ -104,9 +105,18 @@ class BeerControllerTest {
         beerServiceImpl = new BeerServiceImpl();
     }
 
+    //Earlier we were using Basic Authentication for our tests. Now we are using OAuth2 JWT authentication, so we don't need the username and password anymore. We can comment them out.
+    /*public static final String BASIC_AUTH_USERNAME = "user1";
+    public static final String BASIC_AUTH_PASSWORD = "password";*/
 
-    public static final String BASIC_AUTH_USERNAME = "user1";
-    public static final String BASIC_AUTH_PASSWORD = "password";
+    public static final SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor = jwt().jwt(jwt -> {
+        jwt.claims(claims -> {
+                    claims.put("scope", "message-read");
+                    claims.put("scope", "message-write");
+                })
+                .subject("messaging-client")
+                .notBefore(Instant.now().minusSeconds(5L));
+    });
 
     @Test
     void testUpdateBeerByIdNullUpc() throws Exception
@@ -126,14 +136,7 @@ class BeerControllerTest {
 
 
         MvcResult mvcResult = mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(jwt().jwt( jwt -> {
-                            jwt.claims(claims -> {
-                                        claims.put("scope", "message-read");
-                                        claims.put("scope", "message-write");
-                                    })
-                                    .subject("messaging-client")
-                                    .notBefore(Instant.now().minusSeconds(5L));
-                        }))
+                        .with(jwtRequestPostProcessor)
                         //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,7 +171,8 @@ class BeerControllerTest {
 
 
         MvcResult mvcResult = mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeerNullName)))
@@ -202,7 +206,8 @@ class BeerControllerTest {
 
 
         MvcResult mvcResult = mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeerNullName)))
@@ -235,7 +240,8 @@ class BeerControllerTest {
 
 
         MvcResult mvcResult = mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeerNullName)))
@@ -268,7 +274,8 @@ class BeerControllerTest {
 
 
         MvcResult mvcResult = mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeerNullName)))
@@ -302,7 +309,8 @@ class BeerControllerTest {
 
 
         MvcResult mvcResult = mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedBeerNullName)))
@@ -332,7 +340,8 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).getContent().get(1));
 
         MvcResult mvcResult = mockMVC.perform(post(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
@@ -356,7 +365,8 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).getContent().get(1));
 
         MvcResult mvcResult = mockMVC.perform(post(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
@@ -381,7 +391,8 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).getContent().get(1));
 
         MvcResult mvcResult = mockMVC.perform(post(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
@@ -406,7 +417,8 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).getContent().get(1));
 
         MvcResult mvcResult = mockMVC.perform(post(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
@@ -430,7 +442,8 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).getContent().get(1));
 
         MvcResult mvcResult = mockMVC.perform(post(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
@@ -455,7 +468,8 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).getContent().get(1));
 
         MvcResult mvcResult = mockMVC.perform(post(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beerDTO)))
@@ -473,7 +487,8 @@ class BeerControllerTest {
         given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
 
         mockMVC.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD)))
+                        .with(jwtRequestPostProcessor))
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD)))
                 .andExpect(status().isNotFound());
     }
 
@@ -489,7 +504,8 @@ class BeerControllerTest {
 
         //mockMVC.perform(patch(BeerController.BEER_PATH +"/"+beer.getId())
         mockMVC.perform(patch(BeerController.BEER_PATH_ID, beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap)))
@@ -511,7 +527,8 @@ class BeerControllerTest {
 
         //mockMVC.perform(delete(BeerController.BEER_PATH+"/"+beer.getId())
         mockMVC.perform(delete(BeerController.BEER_PATH_ID, beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -531,7 +548,8 @@ class BeerControllerTest {
 
         //mockMVC.perform(put(BeerController.BEER_PATH+"/" + beer.getId())
         mockMVC.perform(put(BeerController.BEER_PATH_ID,beer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beer)))
@@ -552,7 +570,8 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers(null, null, false, 1, 25).getContent().get(1));
 
         mockMVC.perform(post(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beer)))
@@ -565,7 +584,8 @@ class BeerControllerTest {
         given(beerService.listBeers(any(), any(), any(), any(), any())).willReturn(beerServiceImpl.listBeers(null, null, false, null, null));
 
         mockMVC.perform(get(BeerController.BEER_PATH)
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -582,7 +602,8 @@ class BeerControllerTest {
 
         //mockMVC.perform(get(BeerController.BEER_PATH+"/" + testBeer.getId())
         mockMVC.perform(get(BeerController.BEER_PATH_ID,testBeer.getId())
-                        .with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
+                        .with(jwtRequestPostProcessor)
+                        //.with(httpBasic(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

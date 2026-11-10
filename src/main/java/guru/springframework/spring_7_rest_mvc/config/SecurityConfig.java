@@ -25,7 +25,6 @@ public class SecurityConfig {
     //@Value("${spring.security.user.name}") String username;
     //@Value("${spring.security.user.password}") String password;
 
-    //
     /* Used only for Basic Authentication. Not used for OAuth2 JWT authentication
     @Bean
     /public PasswordEncoder passwordEncoder() {
